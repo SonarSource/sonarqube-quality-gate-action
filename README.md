@@ -59,6 +59,11 @@ with:
 
 - `SONAR_TOKEN` – **Required** – this token is used to authenticate access to SonarQube. You can read more about security tokens [here](https://docs.sonarqube.org/latest/user-guide/user-token/). You need to set the `SONAR_TOKEN` environment variable in the "Secrets" settings page of your repository.
 
+## Quality Gate check run
+
+<img src="./images/QualityGate-check-screen.png">
+
+
 ## Do not use this GitHub action if you are in the following situations
 
 * You want to analyze a .NET solution. Read the documentation about our [Scanner for .NET](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-msbuild/).
