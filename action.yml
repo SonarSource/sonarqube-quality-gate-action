@@ -1,0 +1,16 @@
+name: SonarQube Quality Gate Check
+description: >
+  Check if a project / analysis passed the Quality Gate check
+branding:
+  icon: check
+  color: green
+runs:
+  using: "composite"
+  steps:
+    - run: $GITHUB_ACTION_PATH/script/check-quality-gate.sh ${{ inputs.scanMetadataReportFile  }}
+      shell: bash
+inputs:
+  scanMetadataReportFile:
+    description: Location of the scanner metadata report file
+    required: false
+    default: .scannerwork/report-task.txt
