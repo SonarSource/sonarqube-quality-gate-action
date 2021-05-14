@@ -1,4 +1,4 @@
-# SonarQube Quality Gate check
+# SonarQube Quality Gate check [![QA](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/run-qa.yml/badge.svg)](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/run-qa.yml)
 
 Check the Quality Gate of your code with [SonarQube](https://www.sonarqube.org/) to ensure your code meets your own quality standards before you release or deploy new features.
 
@@ -63,7 +63,6 @@ with:
 
 <img src="./images/QualityGate-check-screen.png">
 
-
 ## Do not use this GitHub action if you are in the following situations
 
 * You want to analyze a .NET solution. Read the documentation about our [Scanner for .NET](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-msbuild/).
@@ -76,5 +75,3 @@ To provide feedback (request a feature or report a bug), please post on the [Son
 ## License
 
 Scripts and documentation in this project are released under the LGPLv3 License.
-
-Container images built with this project include third-party materials.

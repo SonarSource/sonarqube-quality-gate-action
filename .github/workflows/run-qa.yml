@@ -1,4 +1,4 @@
-name: Execute tests
+name: QA
 on:
   push:
     branches:
