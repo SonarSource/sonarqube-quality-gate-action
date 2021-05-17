@@ -16,8 +16,9 @@ fi
 
 serverUrl="$(sed -n 's/serverUrl=\(.*\)/\1/p' ${metadataFile})"
 ceTaskUrl="$(sed -n 's/ceTaskUrl=\(.*\)/\1/p' ${metadataFile})"
+dashboardUrl="$(sed -n 's/dashboardUrl=\(.*\)/\1/p' ${metadataFile})"
 
-if [ -z "${serverUrl}" ] || [ -z "${ceTaskUrl}" ]; then
+if [ -z "${serverUrl}" ] || [ -z "${ceTaskUrl}" ] || [ -z "${dashboardUrl}" ]; then
   echo "Invalid report metadata file."
   exit 1
 fi
@@ -37,11 +38,11 @@ qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analys
 qualityGateStatus="$(curl --silent --fail --show-error --user ${SONAR_TOKEN}: ${qualityGateUrl} | jq -r '.projectStatus.status')"
 
 if [[ ${qualityGateStatus} == "OK" ]];then
-   success "Quality Gate has PASSED."
+   success "Quality Gate has PASSED, you can check more details on: ${dashboardUrl}"
 elif [[ ${qualityGateStatus} == "WARN" ]];then
-   warn "Warnings on Quality Gate."
+   warn "Warnings on Quality Gate, you can check more details on: ${dashboardUrl}"
 elif [[ ${qualityGateStatus} == "ERROR" ]];then
-   fail "Quality Gate has FAILED."
+   fail "Quality Gate has FAILED, you can check more details on: ${dashboardUrl}"
 else
    fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."
 fi

@@ -35,6 +35,7 @@ teardown() {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
   echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+  echo "dashboardUrl=http://localhost:9000/dashboard?id=test-project" >> metadata_tmp
 
   #mock curl
   function curl() {
@@ -51,6 +52,7 @@ teardown() {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
   echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+  echo "dashboardUrl=http://localhost:9000/dashboard?id=test-project" >> metadata_tmp
 
   #mock curl
   function curl() {
@@ -65,13 +67,14 @@ teardown() {
 
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 1 ]
-  [[ "$output" = *"Warnings on Quality Gate."* ]]
+  [[ "$output" = *"Warnings on Quality Gate, you can check more details on: http://localhost:9000/dashboard?id=test-project"* ]]
 }
 
 @test "fail when Quality Gate status ERROR" {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
   echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+  echo "dashboardUrl=http://localhost:9000/dashboard?id=test-project" >> metadata_tmp
 
   #mock curl
   function curl() {
@@ -86,13 +89,14 @@ teardown() {
 
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 1 ]
-  [[ "$output" = *"Quality Gate has FAILED."* ]]
+  [[ "$output" = *"Quality Gate has FAILED, you can check more details on: http://localhost:9000/dashboard?id=test-project"* ]]
 }
 
 @test "pass when Quality Gate status OK" {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
   echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+  echo "dashboardUrl=http://localhost:9000/dashboard?id=test-project" >> metadata_tmp
 
   #mock curl
   function curl() {
@@ -107,6 +111,6 @@ teardown() {
 
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 0 ]
-  [[ "$output" = *"Quality Gate has PASSED."* ]]
+  [[ "$output" = *"Quality Gate has PASSED, you can check more details on: http://localhost:9000/dashboard?id=test-project"* ]]
 }
 
