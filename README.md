@@ -8,11 +8,13 @@ SonarQube is the leading product for Continuous Code Quality & Code Security. It
 
 ## Requirements
 
-Repository with SonarQube analysis results.
+A previous step must have run an analysis on your code.
+
+Read more information on how to analyze your code [here](https://docs.sonarqube.org/latest/analysis/github-integration/)
 
 ## Usage
 
-The workflow, usually declared in `.github/workflows/build.yml`, should look like this:
+The workflow YAML file will usually look something like this::
 
 ```yaml
 on:
@@ -47,8 +49,16 @@ jobs:
 
 ```
 
-You can change the location of the report metadata file by using the optional `scanMetadataReportFile` input:
+Make sure to set up `timeout-minutes` property in your step, to avoid wasting action minutes per month (see above example).
 
+When using this action with [sonarsource/sonarqube-scan](https://github.com/SonarSource/sonarqube-scan-action) action or with [C/C++ code analysis](https://docs.sonarqube.org/latest/analysis/languages/cfamily/) you don't have to provide `scanMetadataReportFile` input, otherwise you should alter the location of it.
+
+Typically, report metadata file for different scanners can vary and can be located in:
+- `target/sonar/report-task.txt` for Maven projects
+- `build/sonar/report-task.txt` for Gradle projects
+- `.sonarqube/out/.sonar/report-task.txt` for .NET projects
+
+Example usage:
 ```yaml
 uses: sonarsource/sonarqube-quality-gate-action@master
 with:
@@ -57,20 +67,15 @@ with:
 
 ### Environment variables
 
-- `SONAR_TOKEN` – **Required** – this token is used to authenticate access to SonarQube. You can read more about security tokens [here](https://docs.sonarqube.org/latest/user-guide/user-token/). You need to set the `SONAR_TOKEN` environment variable in the "Secrets" settings page of your repository.
+- `SONAR_TOKEN` – **Required** this is the token used to authenticate access to SonarQube. You can read more about security tokens [here](https://docs.sonarqube.org/latest/user-guide/user-token/). You can set the `SONAR_TOKEN` environment variable in the "Secrets" settings page of your repository, or you can add them at the level of your GitHub organization (recommended).
 
 ## Quality Gate check run
 
 <img src="./images/QualityGate-check-screen.png">
 
-## Do not use this GitHub action if you are in the following situations
-
-* You want to analyze a .NET solution. Read the documentation about our [Scanner for .NET](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-msbuild/).
-* You want to analyze C/C++ code. Read the documentation on [analyzing C/C++ code](https://docs.sonarqube.org/latest/analysis/languages/cfamily/).
-
 ## Have questions or feedback?
 
-To provide feedback (request a feature or report a bug), please post on the [SonarSource Community Forum](https://community.sonarsource.com/) with the tag `sonarqube`.
+To provide feedback (requesting a feature or reporting a bug) please post on the [SonarSource Community Forum](https://community.sonarsource.com/tags/c/help/sq/github-actions).
 
 ## License
 
