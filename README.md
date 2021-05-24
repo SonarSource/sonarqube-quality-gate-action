@@ -48,11 +48,13 @@ jobs:
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 ```
-In case you are using Maven or Gradle scanner in your repository, you should alter the location of the report metadata file by using the optional `scanMetadataReportFile` input.
 
-Typically, report metadata file will be located in:
+When using this action with [sonarsource/sonarqube-scan](https://github.com/SonarSource/sonarqube-scan-action) action or with [C/C++ code analysis](https://docs.sonarqube.org/latest/analysis/languages/cfamily/) you don't have to provide `scanMetadataReportFile` input, otherwise you should alter the location of it.
+
+Typically, report metadata file for different scanners can vary and can be located in:
 - `target/sonar/report-task.txt` for Maven projects
 - `build/sonar/report-task.txt` for Gradle projects
+- `.sonarqube/out/.sonar/report-task.txt` for .NET projects
 
 Example usage:
 ```yaml
@@ -70,10 +72,6 @@ Make sure to set up `timeout-minutes` property in your step, to avoid wasting ac
 ## Quality Gate check run
 
 <img src="./images/QualityGate-check-screen.png">
-
-## Limitations
-
-This action is not intended to be used with .NET or C/C++ scanner analysis results.
 
 ## Have questions or feedback?
 
