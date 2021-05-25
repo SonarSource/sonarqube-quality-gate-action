@@ -34,7 +34,7 @@ jobs:
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
-      #Triggering SonarQube analysis as results of it is required by Quality Gate check
+      # Triggering SonarQube analysis as results of it are required by Quality Gate check
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
       env:
@@ -60,9 +60,10 @@ Typically, report metadata file for different scanners can vary and can be locat
 
 Example usage:
 ```yaml
-uses: sonarsource/sonarqube-quality-gate-action@master
-with:
-  scanMetadataReportFile: target/sonar/report-task.txt
+- name: SonarQube Quality Gate check
+  uses: sonarsource/sonarqube-quality-gate-action@master
+  with:
+    scanMetadataReportFile: target/sonar/report-task.txt
 ```
 
 ### Environment variables
