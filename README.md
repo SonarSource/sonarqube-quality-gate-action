@@ -32,20 +32,29 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting
+        # Disabling shallow clone is recommended for improving relevancy of reporting.
         fetch-depth: 0
-      # Triggering SonarQube analysis as results of it are required by Quality Gate check
+
+    # Triggering SonarQube analysis as results of it are required by Quality Gate check.
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    # Check the Quality Gate status.
     - name: SonarQube Quality Gate check
+      id: sonarqube-quality-gate-check
       uses: sonarsource/sonarqube-quality-gate-action@master
-      # Force to fail step after specific time
+      # Force to fail step after specific time.
       timeout-minutes: 5
       env:
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    # Optionally you can use the output from the Quality Gate in another step.
+    # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
+    - name: "Example show SonarQube Quality Gate Status value"
+      run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 
 ```
 
@@ -54,11 +63,13 @@ Make sure to set up `timeout-minutes` property in your step, to avoid wasting ac
 When using this action with [sonarsource/sonarqube-scan](https://github.com/SonarSource/sonarqube-scan-action) action or with [C/C++ code analysis](https://docs.sonarqube.org/latest/analysis/languages/cfamily/) you don't have to provide `scanMetadataReportFile` input, otherwise you should alter the location of it.
 
 Typically, report metadata file for different scanners can vary and can be located in:
+
 - `target/sonar/report-task.txt` for Maven projects
 - `build/sonar/report-task.txt` for Gradle projects
 - `.sonarqube/out/.sonar/report-task.txt` for .NET projects
 
 Example usage:
+
 ```yaml
 - name: SonarQube Quality Gate check
   uses: sonarsource/sonarqube-quality-gate-action@master

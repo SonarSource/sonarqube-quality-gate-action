@@ -45,6 +45,7 @@ teardown() {
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 1 ]
   [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."* ]]
+  [[ "$output" = *"name=quality-gate-status::FAILED"* ]]
 }
 
 @test "fail when Quality Gate status WARN" {
@@ -66,6 +67,7 @@ teardown() {
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 1 ]
   [[ "$output" = *"Warnings on Quality Gate."* ]]
+  [[ "$output" = *"name=quality-gate-status::WARN"* ]]
 }
 
 @test "fail when Quality Gate status ERROR" {
@@ -87,6 +89,7 @@ teardown() {
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 1 ]
   [[ "$output" = *"Quality Gate has FAILED."* ]]
+  [[ "$output" = *"name=quality-gate-status::FAILED"* ]]
 }
 
 @test "pass when Quality Gate status OK" {
@@ -108,5 +111,6 @@ teardown() {
   run script/check-quality-gate.sh metadata_tmp
   [ "$status" -eq 0 ]
   [[ "$output" = *"Quality Gate has PASSED."* ]]
+  [[ "$output" = *"name=quality-gate-status::PASSED"* ]]
 }
 
