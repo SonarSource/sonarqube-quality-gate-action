@@ -14,3 +14,7 @@ inputs:
     description: Location of the scanner metadata report file
     required: false
     default: .scannerwork/report-task.txt
+outputs:
+  qualityGateStatus:
+    description: >
+      The resulting Quality Gate Status value of PASSED, WARN or FAILED

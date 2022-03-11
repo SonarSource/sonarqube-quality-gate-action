@@ -37,12 +37,16 @@ qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analys
 qualityGateStatus="$(curl --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
 
 if [[ ${qualityGateStatus} == "OK" ]];then
+   echo '::set-output name=qualityGateStatus::PASSED'
    success "Quality Gate has PASSED."
 elif [[ ${qualityGateStatus} == "WARN" ]];then
+   echo '::set-output name=qualityGateStatus::WARN'
    warn "Warnings on Quality Gate."
 elif [[ ${qualityGateStatus} == "ERROR" ]];then
+   echo '::set-output name=qualityGateStatus::FAILED'
    fail "Quality Gate has FAILED."
 else
+   echo '::set-output name=qualityGateStatus::FAILED'
    fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."
 fi
 

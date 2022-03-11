@@ -34,18 +34,26 @@ jobs:
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
-      # Triggering SonarQube analysis as results of it are required by Quality Gate check
+
+    # Triggering SonarQube analysis as results of it are required by Quality Gate check
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    # Individual step to check the quality gate
     - name: SonarQube Quality Gate check
+      id: sqQualityGateCk
       uses: sonarsource/sonarqube-quality-gate-action@master
       # Force to fail step after specific time
       timeout-minutes: 5
       env:
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    # Optionally you can use the output from the Quality Gate in another step
+    - name: "Example show SonarQube Quality Gate Status value"
+      run: echo "The Status is ${{ steps.sqQualityGateCk.outputs.qualityGateStatus }}"
 
 ```
 
@@ -54,16 +62,30 @@ Make sure to set up `timeout-minutes` property in your step, to avoid wasting ac
 When using this action with [sonarsource/sonarqube-scan](https://github.com/SonarSource/sonarqube-scan-action) action or with [C/C++ code analysis](https://docs.sonarqube.org/latest/analysis/languages/cfamily/) you don't have to provide `scanMetadataReportFile` input, otherwise you should alter the location of it.
 
 Typically, report metadata file for different scanners can vary and can be located in:
+
 - `target/sonar/report-task.txt` for Maven projects
 - `build/sonar/report-task.txt` for Gradle projects
 - `.sonarqube/out/.sonar/report-task.txt` for .NET projects
 
 Example usage:
+
 ```yaml
 - name: SonarQube Quality Gate check
   uses: sonarsource/sonarqube-quality-gate-action@master
   with:
     scanMetadataReportFile: target/sonar/report-task.txt
+```
+
+The `qualityGateStatus` output variable from the action is set to a value of `PASSED`, `WARN` or `FAILED`. It can optionally be used as follows:
+
+```yaml
+- name: SonarQube Quality Gate check
+  id: sqQualityGateCk # id can be any uniqe value throught the yml file
+  uses: sonarsource/sonarqube-quality-gate-action@master
+  with:
+    scanMetadataReportFile: target/sonar/report-task.txt
+- name: "Example show SonarQube Quality Gate Status value"
+  run: echo "The Status is ${{ steps.sqQualityGateCk.outputs.qualityGateStatus }}"
 ```
 
 ### Environment variables
