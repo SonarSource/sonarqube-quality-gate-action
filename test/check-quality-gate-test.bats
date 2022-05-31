@@ -16,6 +16,29 @@ teardown() {
   [ "$output" = "Set the SONAR_TOKEN env variable." ]
 }
 
+@test "use URL from SONAR_HOST_URL instead of metadata file when it is provided" {
+  export SONAR_TOKEN="test"
+  export SONAR_HOST_URL="http://sonarqube.org/" # Add a trailing slash, so we validate it correctly removes it.
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+
+  #mock curl
+  function curl() {
+    url="${@: -1}"
+    if [[ $url == "http://localhost:9000/"* ]]; then
+      echo '{"error":["Not found"]}'
+    elif [[ $url == "http://sonarqube.org/api/qualitygates/project_status?analysisId"* ]]; then
+      echo '{"projectStatus":{"status":"OK"}}'
+    else
+      echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"SUCCESS"}}'
+    fi
+  }
+  export -f curl
+
+  run script/check-quality-gate.sh metadata_tmp
+  [ "$status" -eq 0 ]
+}
+
 @test "fail when metadata file not exist" {
   rm -f metadata_tmp
   export SONAR_TOKEN="test"
