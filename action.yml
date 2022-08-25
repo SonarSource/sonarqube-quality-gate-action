@@ -1,4 +1,4 @@
-name: SonarQube Quality Gate Check
+name: Remoteexceptions SonarQube Quality Gate Check
 description: >
   Check if a project / analysis passed the Quality Gate check
 branding:
