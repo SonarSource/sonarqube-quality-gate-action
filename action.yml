@@ -7,7 +7,8 @@ branding:
 runs:
   using: "composite"
   steps:
-    - run: $GITHUB_ACTION_PATH/script/check-quality-gate.sh ${{ inputs.scanMetadataReportFile  }}
+    - id: quality-gate-check
+      run: $GITHUB_ACTION_PATH/script/check-quality-gate.sh ${{ inputs.scanMetadataReportFile  }}
       shell: bash
 inputs:
   scanMetadataReportFile:
@@ -18,3 +19,4 @@ outputs:
   quality-gate-status:
     description: >
       The resulting Quality Gate Status value of PASSED, WARN or FAILED
+    value: ${{ steps.quality-gate-check.outputs.quality-gate-status }}
