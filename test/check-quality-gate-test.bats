@@ -4,10 +4,12 @@ setup() {
   DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )"
   PATH="$DIR/../src:$PATH"
   touch metadata_tmp
+  touch statefile_tmp
 }
 
 teardown() {
   rm -f metadata_tmp
+  rm -rf statefile_tmp
 }
 
 @test "fail when SONAR_TOKEN not provided" {
@@ -137,3 +139,33 @@ teardown() {
   [[ "$output" = *"name=quality-gate-status::PASSED"* ]]
 }
 
+# This test takes 5 seconds because of the `sleep` in the status loop
+@test "pass when Quality Gate status OK and status starts from IN_PROGRESS" {
+  export SONAR_TOKEN="test"
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+
+  printf "1" > statefile_tmp
+
+  #mock curl
+  function curl() {
+    read -r counter < statefile_tmp
+
+    url="${@: -1}"
+     if [[ $url == *"/api/qualitygates/project_status?analysisId"* ]]; then
+       echo '{"projectStatus":{"status":"OK"}}'
+     elif [[ $counter -gt 0 ]]; then
+       echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"IN_PROGRESS"}}'
+       printf "%d\n" "$(( --counter ))" > statefile_tmp
+     else
+       echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"SUCCESS"}}'
+     fi
+  }
+  export -f curl
+
+  run -0 script/check-quality-gate.sh metadata_tmp
+
+  # lines[0] is the dots from waiting for status to move to SUCCESS
+  [[ "${lines[1]}" = "::set-output name=quality-gate-status::PASSED" ]]
+  [[ "${lines[2]}" = *"Quality Gate has PASSED."* ]]
+}
