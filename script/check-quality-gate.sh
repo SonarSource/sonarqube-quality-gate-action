@@ -42,6 +42,7 @@ qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analys
 qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
 
 printf '\n'
+echo "Will write status to ${GITHUB_OUTPUT}"
 if [[ ${qualityGateStatus} == "OK" ]]; then
    echo 'name=quality-gate-status::PASSED' >> ${GITHUB_OUTPUT}
    success "Quality Gate has PASSED."
