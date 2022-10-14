@@ -73,7 +73,7 @@ teardown() {
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
   [ "$status" -eq 1 ]
-  [[ "${github_out_actual}" = "name=quality-gate-status::FAILED" ]]
+  [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."* ]]
 }
 
@@ -98,7 +98,7 @@ teardown() {
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
   [ "$status" -eq 1 ]
-  [[ "${github_out_actual}" = "name=quality-gate-status::WARN" ]]
+  [[ "${github_out_actual}" = "quality-gate-status=WARN" ]]
   [[ "$output" = *"Warnings on Quality Gate."* ]]
 }
 
@@ -123,7 +123,7 @@ teardown() {
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
   [ "$status" -eq 1 ]
-  [[ "${github_out_actual}" = "name=quality-gate-status::FAILED" ]]
+  [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Quality Gate has FAILED."* ]]
 }
 
@@ -148,7 +148,7 @@ teardown() {
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
   [ "$status" -eq 0 ]
-  [[ "${github_out_actual}" = "name=quality-gate-status::PASSED" ]]
+  [[ "${github_out_actual}" = "quality-gate-status=PASSED" ]]
   [[ "$output" = *"Quality Gate has PASSED."* ]]
 }
 
@@ -187,7 +187,7 @@ teardown() {
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
   [ "$status" -eq 0 ]
-  [[ "${github_out_actual}" = "name=quality-gate-status::PASSED" ]]
+  [[ "${github_out_actual}" = "quality-gate-status=PASSED" ]]
   # lines[0] is the dots from waiting for status to move to SUCCESS
   [[ "${lines[0]}" = "....." ]]
   [[ "${lines[1]}" = *"Quality Gate has PASSED."* ]]

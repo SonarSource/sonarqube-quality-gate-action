@@ -42,18 +42,17 @@ qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analys
 qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
 
 printf '\n'
-echo "Will write status to ${GITHUB_OUTPUT}"
 if [[ ${qualityGateStatus} == "OK" ]]; then
-   echo 'name=quality-gate-status::PASSED' >> ${GITHUB_OUTPUT}
+   echo 'quality-gate-status=PASSED' >> ${GITHUB_OUTPUT}
    success "Quality Gate has PASSED."
 elif [[ ${qualityGateStatus} == "WARN" ]]; then
-   echo 'name=quality-gate-status::WARN' >> ${GITHUB_OUTPUT}
+   echo 'quality-gate-status=WARN' >> ${GITHUB_OUTPUT}
    warn "Warnings on Quality Gate."
 elif [[ ${qualityGateStatus} == "ERROR" ]]; then
-   echo 'name=quality-gate-status::FAILED' >> ${GITHUB_OUTPUT}
+   echo 'quality-gate-status=FAILED' >> ${GITHUB_OUTPUT}
    fail "Quality Gate has FAILED."
 else
-   echo 'name=quality-gate-status::FAILED' >> ${GITHUB_OUTPUT}
+   echo 'quality-gate-status=FAILED' >> ${GITHUB_OUTPUT}
    fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."
 fi
 
