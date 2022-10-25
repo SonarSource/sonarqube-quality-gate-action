@@ -192,3 +192,34 @@ teardown() {
   [[ "${lines[0]}" = "....." ]]
   [[ "${lines[1]}" = *"Quality Gate has PASSED."* ]]
 }
+
+@test "pass spaces in GITHUB_OUTPUT path are handled" {
+  export SONAR_TOKEN="test"
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+
+  #mock curl
+  function curl() {
+    url="${@: -1}"
+     if [[ $url == *"/api/qualitygates/project_status?analysisId"* ]]; then
+       echo '{"projectStatus":{"status":"OK"}}'
+     else
+       echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"SUCCESS"}}'
+     fi
+  }
+  export -f curl
+
+  # GITHUB_OUTPUT is a path with spaces
+  github_output_dir="${BATS_TEST_TMPDIR}/some subdir"
+  mkdir -p "${github_output_dir}"
+  export GITHUB_OUTPUT="${github_output_dir}/github_output"
+  touch "${GITHUB_OUTPUT}"
+
+  run script/check-quality-gate.sh metadata_tmp
+
+  read -r github_out_actual < "${GITHUB_OUTPUT}"
+
+  [ "$status" -eq 0 ]
+  [[ "${github_out_actual}" = "quality-gate-status=PASSED" ]]
+  [[ "$output" = *"Quality Gate has PASSED."* ]]
+}
