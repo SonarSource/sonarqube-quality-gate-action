@@ -23,6 +23,15 @@ success() { echo -e "${green}✔ $*${reset}"; }
 warn() { echo -e "${yellow}✖ $*${reset}"; exit 1; }
 fail() { echo -e "${red}✖ $*${reset}"; exit 1; }
 
+# support old GH Actions runners
+set_output () {
+  if [[ -n "${GITHUB_OUTPUT}" ]]; then
+    echo "${1}=${2}" >> "${GITHUB_OUTPUT}"
+  else
+    echo "::set-output name=${1}::${2}"
+  fi
+}
+
 ## Enable debug mode.
 enable_debug() {
   if [[ "${DEBUG}" == "true" ]]; then
