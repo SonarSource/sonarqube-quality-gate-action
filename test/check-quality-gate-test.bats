@@ -3,11 +3,14 @@
 setup() {
   DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )"
   PATH="$DIR/../src:$PATH"
+  export GITHUB_OUTPUT=${BATS_TEST_TMPDIR}/github_output
+  touch ${GITHUB_OUTPUT}
   touch metadata_tmp
 }
 
 teardown() {
   rm -f metadata_tmp
+  unset GITHUB_OUTPUT
 }
 
 @test "fail when SONAR_TOKEN not provided" {
@@ -66,9 +69,12 @@ teardown() {
   export -f curl
 
   run script/check-quality-gate.sh metadata_tmp
+
+  read -r github_out_actual < ${GITHUB_OUTPUT}
+
   [ "$status" -eq 1 ]
+  [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."* ]]
-  [[ "$output" = *"name=quality-gate-status::FAILED"* ]]
 }
 
 @test "fail when Quality Gate status WARN" {
@@ -88,9 +94,12 @@ teardown() {
   export -f curl
 
   run script/check-quality-gate.sh metadata_tmp
+
+  read -r github_out_actual < ${GITHUB_OUTPUT}
+
   [ "$status" -eq 1 ]
+  [[ "${github_out_actual}" = "quality-gate-status=WARN" ]]
   [[ "$output" = *"Warnings on Quality Gate."* ]]
-  [[ "$output" = *"name=quality-gate-status::WARN"* ]]
 }
 
 @test "fail when Quality Gate status ERROR" {
@@ -110,9 +119,12 @@ teardown() {
   export -f curl
 
   run script/check-quality-gate.sh metadata_tmp
+
+  read -r github_out_actual < ${GITHUB_OUTPUT}
+
   [ "$status" -eq 1 ]
+  [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Quality Gate has FAILED."* ]]
-  [[ "$output" = *"name=quality-gate-status::FAILED"* ]]
 }
 
 @test "pass when Quality Gate status OK" {
@@ -132,8 +144,51 @@ teardown() {
   export -f curl
 
   run script/check-quality-gate.sh metadata_tmp
+
+  read -r github_out_actual < ${GITHUB_OUTPUT}
+
   [ "$status" -eq 0 ]
+  [[ "${github_out_actual}" = "quality-gate-status=PASSED" ]]
   [[ "$output" = *"Quality Gate has PASSED."* ]]
-  [[ "$output" = *"name=quality-gate-status::PASSED"* ]]
 }
 
+@test "pass when Quality Gate status OK and status starts from IN_PROGRESS" {
+  export SONAR_TOKEN="test"
+  export COUNTER_FILE=${BATS_TEST_TMPDIR}/counter
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+
+  printf "5" > ${COUNTER_FILE}
+
+  #mock curl
+  function curl() {
+    read -r counter < ${COUNTER_FILE}
+
+    url="${@: -1}"
+     if [[ $url == *"/api/qualitygates/project_status?analysisId"* ]]; then
+       echo '{"projectStatus":{"status":"OK"}}'
+     elif [[ $counter -gt 0 ]]; then
+       echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"IN_PROGRESS"}}'
+       printf "%d\n" "$(( --counter ))" > ${COUNTER_FILE}
+     else
+       echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"SUCCESS"}}'
+     fi
+  }
+  export -f curl
+
+  #mock sleep
+  function sleep() {
+    return 0
+  }
+  export -f sleep
+
+  run script/check-quality-gate.sh metadata_tmp
+
+  read -r github_out_actual < ${GITHUB_OUTPUT}
+
+  [ "$status" -eq 0 ]
+  [[ "${github_out_actual}" = "quality-gate-status=PASSED" ]]
+  # lines[0] is the dots from waiting for status to move to SUCCESS
+  [[ "${lines[0]}" = "....." ]]
+  [[ "${lines[1]}" = *"Quality Gate has PASSED."* ]]
+}

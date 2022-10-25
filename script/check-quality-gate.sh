@@ -41,17 +41,18 @@ analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
 qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analysisId}"
 qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
 
+printf '\n'
 if [[ ${qualityGateStatus} == "OK" ]]; then
-   echo '::set-output name=quality-gate-status::PASSED'
+   echo 'quality-gate-status=PASSED' >> ${GITHUB_OUTPUT}
    success "Quality Gate has PASSED."
 elif [[ ${qualityGateStatus} == "WARN" ]]; then
-   echo '::set-output name=quality-gate-status::WARN'
+   echo 'quality-gate-status=WARN' >> ${GITHUB_OUTPUT}
    warn "Warnings on Quality Gate."
 elif [[ ${qualityGateStatus} == "ERROR" ]]; then
-   echo '::set-output name=quality-gate-status::FAILED'
+   echo 'quality-gate-status=FAILED' >> ${GITHUB_OUTPUT}
    fail "Quality Gate has FAILED."
 else
-   echo '::set-output name=quality-gate-status::FAILED'
+   echo 'quality-gate-status=FAILED' >> ${GITHUB_OUTPUT}
    fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."
 fi
 
