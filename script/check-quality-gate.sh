@@ -27,6 +27,13 @@ if [ -z "${serverUrl}" ] || [ -z "${ceTaskUrl}" ]; then
   exit 1
 fi
 
+if [[ -n "${SONAR_ROOT_CERT}" ]]; then
+  echo "Adding custom root certificate to ~/.curlrc"
+  rm -f /tmp/tmpcert.pem
+  echo "${SONAR_ROOT_CERT}" > /tmp/tmpcert.pem
+  echo "--cacert /tmp/tmpcert.pem" >> ~/.curlrc
+fi
+
 task="$(curl --location --location-trusted --max-redirs 10  --silent --fail --show-error --user "${SONAR_TOKEN}": "${ceTaskUrl}")"
 status="$(jq -r '.task.status' <<< "$task")"
 
