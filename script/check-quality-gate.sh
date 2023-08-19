@@ -43,21 +43,24 @@ until [[ ${status} != "PENDING" && ${status} != "IN_PROGRESS" ]]; do
     task="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${ceTaskUrl}")"
     status="$(jq -r '.task.status' <<< "$task")"
 done
+printf '\n'
 
 analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
 qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analysisId}"
 qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
 
-printf '\n'
+dashboardUrl="$(sed -n 's/dashboardUrl=\(.*\)/\1/p' "${metadataFile}")"
+analysisResultMsg="Detailed information can be found at: ${dashboardUrl}\n"
+
 if [[ ${qualityGateStatus} == "OK" ]]; then
    set_output "quality-gate-status" "PASSED"
    success "Quality Gate has PASSED."
 elif [[ ${qualityGateStatus} == "WARN" ]]; then
    set_output "quality-gate-status" "WARN"
-   warn "Warnings on Quality Gate."
+   warn "Warnings on Quality Gate.${reset}\n\n${analysisResultMsg}"
 elif [[ ${qualityGateStatus} == "ERROR" ]]; then
    set_output "quality-gate-status" "FAILED"
-   fail "Quality Gate has FAILED."
+   fail "Quality Gate has FAILED.${reset}\n\n${analysisResultMsg}"
 else
    set_output "quality-gate-status" "FAILED"
    fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."

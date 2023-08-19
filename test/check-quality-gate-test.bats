@@ -81,6 +81,7 @@ teardown() {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
   echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+  echo "dashboardUrl=http://localhost:9000/dashboard?id=project&branch=master" >> metadata_tmp
 
   #mock curl
   function curl() {
@@ -100,12 +101,14 @@ teardown() {
   [ "$status" -eq 1 ]
   [[ "${github_out_actual}" = "quality-gate-status=WARN" ]]
   [[ "$output" = *"Warnings on Quality Gate."* ]]
+  [[ "$output" = *"Detailed information can be found at: http://localhost:9000/dashboard?id=project&branch=master"* ]]
 }
 
 @test "fail when Quality Gate status ERROR" {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
   echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3gsFwOUsY8YKHTn" >> metadata_tmp
+  echo "dashboardUrl=http://localhost:9000/dashboard?id=project&branch=master" >> metadata_tmp
 
   #mock curl
   function curl() {
@@ -125,6 +128,7 @@ teardown() {
   [ "$status" -eq 1 ]
   [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Quality Gate has FAILED."* ]]
+  [[ "$output" = *"Detailed information can be found at: http://localhost:9000/dashboard?id=project&branch=master"* ]]
 }
 
 @test "pass when Quality Gate status OK" {
@@ -150,6 +154,7 @@ teardown() {
   [ "$status" -eq 0 ]
   [[ "${github_out_actual}" = "quality-gate-status=PASSED" ]]
   [[ "$output" = *"Quality Gate has PASSED."* ]]
+  [[ "$output" != *"Detailed information can be found at:"* ]]
 }
 
 @test "pass when Quality Gate status OK and status starts from IN_PROGRESS" {
