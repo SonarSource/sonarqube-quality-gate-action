@@ -1,4 +1,4 @@
-name: SonarQube Quality Gate Check
+name: SonarQube Quality Gate Check Action
 description: >
   Check if a project / analysis passed the Quality Gate check
 branding:
