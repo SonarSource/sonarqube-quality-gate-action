@@ -37,7 +37,7 @@ jobs:
 
     # Triggering SonarQube analysis as results of it are required by Quality Gate check.
     - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
+      uses: opsverseio/sonarqube-quality-gate-action@0.1.0
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -47,7 +47,7 @@ jobs:
     # Check the Quality Gate status.
     - name: SonarQube Quality Gate check
       id: sonarqube-quality-gate-check
-      uses: sonarsource/sonarqube-quality-gate-action@master
+      uses: opsverseio/sonarqube-quality-gate-action@0.1.0
       # Force to fail step after specific time.
       timeout-minutes: 5
       env:
@@ -76,7 +76,7 @@ Example usage:
 
 ```yaml
 - name: SonarQube Quality Gate check
-  uses: sonarsource/sonarqube-quality-gate-action@master
+  uses: opsverseio/sonarqube-quality-gate-action@0.1.0
   with:
     scanMetadataReportFile: target/sonar/report-task.txt
 ```
