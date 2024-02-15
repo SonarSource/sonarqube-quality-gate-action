@@ -47,11 +47,16 @@ printf '\n'
 
 analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
 qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analysisId}"
-qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
+sonarQubeResponse="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}")"
+qualityGateStatus="$(sonarQubeResponse | jq -r '.projectStatus.status')"
+qualityGateProjectStatus="$(sonarQubeResponse | jq -r '.projectStatus.conditions')"
 
 dashboardUrl="$(sed -n 's/dashboardUrl=\(.*\)/\1/p' "${metadataFile}")"
 analysisResultMsg="Detailed information can be found at: ${dashboardUrl}\n"
 
+if [[ "${SET_SONAR_PROJECT_STATUS}"  = "true" ]]; then
+   set_output "quality_gate_project_status" ${qualityGateProjectStatus}
+fi
 if [[ ${qualityGateStatus} == "OK" ]]; then
    set_output "quality-gate-status" "PASSED"
    success "Quality Gate has PASSED."

@@ -20,3 +20,7 @@ outputs:
     description: >
       The resulting Quality Gate Status value of PASSED, WARN or FAILED
     value: ${{ steps.quality-gate-check.outputs.quality-gate-status }}
+  quality_gate_project_status:
+    description: >
+      Sets the metadata (quality gate status) of a project as the output. Check https://sonarcloud.io/web_api/api/qualitygates/project_status?deprecated=false&section=response for more details on the metadata that SonarQube server returns.
+    value: ${{ steps.quality-gate-check.outputs.quality_gate_project_status }}

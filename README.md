@@ -41,6 +41,8 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        # Sets the metadata (quality gate status) of a project as the output. Check https://sonarcloud.io/web_api/api/qualitygates/project_status?deprecated=false&section=response for more details on the metadata that SonarQube server returns.
+        SET_SONAR_PROJECT_STATUS: true 
 
     # Check the Quality Gate status.
     - name: SonarQube Quality Gate check
@@ -51,6 +53,7 @@ jobs:
       env:
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
+       SET_SONAR_PROJECT_STATUS: true 
 
     # Optionally you can use the output from the Quality Gate in another step.
     # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
@@ -85,6 +88,8 @@ Example usage:
 - `SONAR_HOST_URL` – **Optional** this tells the scanner where SonarQube is hosted, otherwise it will get the one from the scan report. You can set the `SONAR_HOST_URL` environment variable in the "Secrets" settings page of your repository, or you can add them at the level of your GitHub organization (recommended).
 
 - `SONAR_ROOT_CERT` – Holds an additional root certificate (in PEM format) that is used to validate the SonarQube server certificate. You can set the `SONAR_ROOT_CERT` environment variable in the "Secrets" settings page of your repository, or you can add them at the level of your GitHub organization (recommended).
+
+- `SET_SONAR_PROJECT_STATUS` - Sets the metadata (quality gate status) of a project as the output. Check https://sonarcloud.io/web_api/api/qualitygates/project_status?deprecated=false&section=response for more details on the metadata that SonarQube server returns.
 
 ## Quality Gate check run
 
