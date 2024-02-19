@@ -48,7 +48,7 @@ printf '\n'
 analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
 qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analysisId}"
 qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
-qualityGateProjectStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.conditions')"
+qualityGateProjectStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq '.projectStatus.conditions')"
 
 dashboardUrl="$(sed -n 's/dashboardUrl=\(.*\)/\1/p' "${metadataFile}")"
 analysisResultMsg="Detailed information can be found at: ${dashboardUrl}\n"
