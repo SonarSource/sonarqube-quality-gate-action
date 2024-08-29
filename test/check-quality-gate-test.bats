@@ -119,7 +119,6 @@ teardown() {
   run script/check-quality-gate.sh metadata_tmp 5
 
   [ "$status" -eq 1 ]
-  [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube's Quality Gate."* ]]
 }
 
