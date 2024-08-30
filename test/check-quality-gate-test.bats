@@ -38,7 +38,7 @@ teardown() {
   }
   export -f curl
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
   [ "$status" -eq 0 ]
 }
 
@@ -52,9 +52,37 @@ teardown() {
 
 @test "fail when empty metadata file" {
   export SONAR_TOKEN="test"
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
   [ "$status" -eq 1 ]
   [ "$output" = "Invalid report metadata file." ]
+}
+
+@test "fail when no polling timeout is provided" {
+  export SONAR_TOKEN="test"
+  run script/check-quality-gate.sh metadata_tmp
+  [ "$status" -eq 1 ]
+  [ "$output" = "'' is an invalid value for the polling timeout. Please use a positive, non-zero number." ]
+}
+
+@test "fail when polling timeout is not a number" {
+  export SONAR_TOKEN="test"
+  run script/check-quality-gate.sh metadata_tmp metadata_tmp
+  [ "$status" -eq 1 ]
+  [ "$output" = "'metadata_tmp' is an invalid value for the polling timeout. Please use a positive, non-zero number." ]
+}
+
+@test "fail when polling timeout is zero" {
+  export SONAR_TOKEN="test"
+  run script/check-quality-gate.sh metadata_tmp 0
+  [ "$status" -eq 1 ]
+  [ "$output" = "'0' is an invalid value for the polling timeout. Please use a positive, non-zero number." ]
+}
+
+@test "fail when polling timeout is negative" {
+  export SONAR_TOKEN="test"
+  run script/check-quality-gate.sh metadata_tmp -1
+  [ "$status" -eq 1 ]
+  [ "$output" = "'-1' is an invalid value for the polling timeout. Please use a positive, non-zero number." ]
 }
 
 @test "fail when no Quality Gate status" {
@@ -68,13 +96,30 @@ teardown() {
   }
   export -f curl
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
   [ "$status" -eq 1 ]
   [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
   [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."* ]]
+}
+
+@test "fail when polling timeout is reached" {
+  export SONAR_TOKEN="test"
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3jz9LkwR9Gs0pBY" >> metadata_tmp
+
+  #mock curl
+  function curl() {
+     echo '{"task":{"analysisId":"AXlCe3jz9LkwR9Gs0pBY","status":"PENDING"}}'
+  }
+  export -f curl
+
+  run script/check-quality-gate.sh metadata_tmp 5
+
+  [ "$status" -eq 1 ]
+  [[ "$output" = *"Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube's Quality Gate."* ]]
 }
 
 @test "fail when Quality Gate status WARN" {
@@ -94,7 +139,7 @@ teardown() {
   }
   export -f curl
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
@@ -121,7 +166,7 @@ teardown() {
   }
   export -f curl
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
@@ -147,7 +192,7 @@ teardown() {
   }
   export -f curl
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
@@ -187,7 +232,7 @@ teardown() {
   }
   export -f sleep
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   read -r github_out_actual < ${GITHUB_OUTPUT}
 
@@ -220,7 +265,7 @@ teardown() {
   export GITHUB_OUTPUT="${github_output_dir}/github_output"
   touch "${GITHUB_OUTPUT}"
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   read -r github_out_actual < "${GITHUB_OUTPUT}"
 
@@ -246,7 +291,7 @@ teardown() {
   }
   export -f curl
 
-  run script/check-quality-gate.sh metadata_tmp
+  run script/check-quality-gate.sh metadata_tmp 300
 
   [ "$status" -eq 0 ]
   [[ "$output" = *"::set-output name=quality-gate-status::PASSED"* ]]

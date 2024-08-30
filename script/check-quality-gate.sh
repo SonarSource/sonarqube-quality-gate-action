@@ -8,9 +8,16 @@ if [[ -z "${SONAR_TOKEN}" ]]; then
 fi
 
 metadataFile="$1"
+pollingTimeoutSec="$2"
+
 
 if [[ ! -f "$metadataFile" ]]; then
    echo "$metadataFile does not exist."
+   exit 1
+fi
+
+if [[ ! $pollingTimeoutSec =~ ^[0-9]+$ || $pollingTimeoutSec -le 0 ]]; then
+   echo "'$pollingTimeoutSec' is an invalid value for the polling timeout. Please use a positive, non-zero number."
    exit 1
 fi
 
@@ -37,13 +44,20 @@ fi
 task="$(curl --location --location-trusted --max-redirs 10  --silent --fail --show-error --user "${SONAR_TOKEN}": "${ceTaskUrl}")"
 status="$(jq -r '.task.status' <<< "$task")"
 
-until [[ ${status} != "PENDING" && ${status} != "IN_PROGRESS" ]]; do
+endTime=$(( ${SECONDS} + ${pollingTimeoutSec} ))
+
+until [[ ${status} != "PENDING" && ${status} != "IN_PROGRESS" || ${SECONDS} -ge ${endTime} ]]; do
     printf '.'
     sleep 5
     task="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${ceTaskUrl}")"
     status="$(jq -r '.task.status' <<< "$task")"
 done
 printf '\n'
+
+if [[ ${status} == "PENDING" || ${status} == "IN_PROGRESS" ]] && [[ ${SECONDS} -ge ${endTime} ]]; then
+    echo "Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube's Quality Gate."
+    exit 1
+fi
 
 analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
 qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analysisId}"

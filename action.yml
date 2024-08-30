@@ -8,13 +8,17 @@ runs:
   using: "composite"
   steps:
     - id: quality-gate-check
-      run: $GITHUB_ACTION_PATH/script/check-quality-gate.sh ${{ inputs.scanMetadataReportFile  }}
+      run: $GITHUB_ACTION_PATH/script/check-quality-gate.sh "${{ inputs.scanMetadataReportFile  }}" "${{ inputs.pollingTimeoutSec }}"
       shell: bash
 inputs:
   scanMetadataReportFile:
     description: Location of the scanner metadata report file
     required: false
     default: .scannerwork/report-task.txt
+  pollingTimeoutSec:
+    description: "The maximum time (in seconds) to poll for SonarQube's Quality Gate status. Default: 300."
+    required: false
+    default: "300"
 outputs:
   quality-gate-status:
     description: >
