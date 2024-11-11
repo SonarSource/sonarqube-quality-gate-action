@@ -46,8 +46,8 @@ jobs:
     - name: SonarQube Quality Gate check
       id: sonarqube-quality-gate-check
       uses: sonarsource/sonarqube-quality-gate-action@master
-      # Force to fail step after specific time.
-      timeout-minutes: 5
+      with:
+        pollingTimeoutSec: 600
       env:
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
@@ -59,7 +59,7 @@ jobs:
 
 ```
 
-Make sure to set up `timeout-minutes` property in your step, to avoid wasting action minutes per month (see above example).
+Make sure to set up `pollingTimeoutSec` property in your step, to avoid wasting action minutes per month (see above example). If not provided, the default value of 300s is applied.
 
 When using this action with [sonarsource/sonarqube-scan](https://github.com/SonarSource/sonarqube-scan-action) action or with [C/C++ code analysis](https://docs.sonarqube.org/latest/analysis/languages/cfamily/) you don't have to provide `scanMetadataReportFile` input, otherwise you should alter the location of it.
 
