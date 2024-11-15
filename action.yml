@@ -1,4 +1,4 @@
-name: SonarQube Quality Gate Check
+name: SonarQube Server Quality Gate Check
 description: >
   Check if a project / analysis passed the Quality Gate check
 branding:
@@ -16,7 +16,7 @@ inputs:
     required: false
     default: .scannerwork/report-task.txt
   pollingTimeoutSec:
-    description: "The maximum time (in seconds) to poll for SonarQube's Quality Gate status. Default: 300."
+    description: "The maximum time (in seconds) to poll for SonarQube Server's Quality Gate status. Default: 300."
     required: false
     default: "300"
 outputs:
