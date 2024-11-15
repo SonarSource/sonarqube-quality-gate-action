@@ -55,7 +55,7 @@ done
 printf '\n'
 
 if [[ ${status} == "PENDING" || ${status} == "IN_PROGRESS" ]] && [[ ${SECONDS} -ge ${endTime} ]]; then
-    echo "Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube's Quality Gate."
+    echo "Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube Server's Quality Gate."
     exit 1
 fi
 
@@ -77,6 +77,6 @@ elif [[ ${qualityGateStatus} == "ERROR" ]]; then
    fail "Quality Gate has FAILED.${reset}\n\n${analysisResultMsg}"
 else
    set_output "quality-gate-status" "FAILED"
-   fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."
+   fail "Quality Gate not set for the project. Please configure the Quality Gate in SonarQube Server or remove sonarqube-quality-gate action from the workflow."
 fi
 

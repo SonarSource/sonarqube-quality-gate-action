@@ -102,7 +102,7 @@ teardown() {
 
   [ "$status" -eq 1 ]
   [[ "${github_out_actual}" = "quality-gate-status=FAILED" ]]
-  [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."* ]]
+  [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube Server or remove sonarqube-quality-gate action from the workflow."* ]]
 }
 
 @test "fail when polling timeout is reached" {
@@ -119,7 +119,7 @@ teardown() {
   run script/check-quality-gate.sh metadata_tmp 5
 
   [ "$status" -eq 1 ]
-  [[ "$output" = *"Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube's Quality Gate."* ]]
+  [[ "$output" = *"Polling timeout reached for waiting for finishing of the Sonar scan! Aborting the check for SonarQube Server's Quality Gate."* ]]
 }
 
 @test "fail when Quality Gate status WARN" {
