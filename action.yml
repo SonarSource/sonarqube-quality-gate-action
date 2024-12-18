@@ -1,4 +1,5 @@
-name: SonarQube Server Quality Gate Check
+name: SonarQube Quality Gate Check
+# Warning: changing name would change URL in the marketplace
 description: >
   Check if a project / analysis passed the Quality Gate check
 branding:
