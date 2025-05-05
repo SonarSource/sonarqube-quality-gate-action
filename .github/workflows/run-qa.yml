@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   run-unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: sonar-runner
     steps:
       - name: checkout action
         uses: actions/checkout@v2
