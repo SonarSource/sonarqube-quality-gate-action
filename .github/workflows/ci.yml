@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_call:
+jobs:
+  run-unit-tests:
+    uses: ./.github/workflows/unit-tests.yml
+  run-next-analysis:
+    needs: run-unit-tests
+    uses: ./.github/workflows/sonar-scan.yml
+    with:
+      platform_name: "Next"
+      host_url: "https://next.sonarqube.com/sonarqube"
+      vault_path: "development/kv/data/next"
+    permissions:
+      id-token: write
+      contents: read

@@ -1,12 +1,10 @@
-name: QA
+name: Unit Tests
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
+
 jobs:
   run-unit-tests:
+    name: Run Unit Tests
     runs-on: github-ubuntu-latest-s
     steps:
       - name: checkout action
