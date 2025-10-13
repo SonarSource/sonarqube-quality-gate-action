@@ -1,4 +1,4 @@
-# SonarQube Quality Gate check [![QA](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/run-qa.yml/badge.svg)](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/run-qa.yml)
+# SonarQube Quality Gate check [![CI](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/ci.yml/badge.svg)](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/ci.yml)
 
 Check the Quality Gate of your code with [SonarQube Server](https://www.sonarsource.com/products/sonarqube/) or [SonarQube Community Build](https://www.sonarsource.com/open-source-editions/sonarqube-community-edition/) to ensure your code meets your own quality standards before you release or deploy new features.
 

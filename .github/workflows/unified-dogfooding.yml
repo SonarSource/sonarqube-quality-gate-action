@@ -2,9 +2,6 @@ name: Unified Dogfooding scans
 on:
   schedule:
     - cron: '0 4 * * 1' # Run weekly on Monday at 04:00 UTC
-  push:
-    branches:
-      - task/sh/sc-32488
   workflow_dispatch:
 
 jobs:
@@ -15,14 +12,14 @@ jobs:
       id-token: write
       contents: read
 
-  run-sqc-eu-analysis:
-    name: SQC EU Scan
+  run-next-analysis:
+    name: Next Scan
     needs: run-ci
     uses: ./.github/workflows/sonar-scan.yml
     with:
-      platform_name: "SQC-EU"
-      host_url: "https://sonarcloud.io"
-      vault_path: "development/kv/data/sonarcloud"
+      platform_name: "Next"
+      host_url: "https://next.sonarqube.com/sonarqube"
+      vault_path: "development/kv/data/next"
     permissions:
       id-token: write
       contents: read
@@ -41,7 +38,7 @@ jobs:
 
   run-iris:
     name: IRIS
-    needs: [run-ci, run-sqc-eu-analysis, run-sqc-us-analysis]
+    needs: [run-ci, run-next-analysis, run-sqc-us-analysis]
     runs-on: github-ubuntu-latest-s
     permissions:
       id-token: write
@@ -52,8 +49,8 @@ jobs:
         uses: SonarSource/unified-dogfooding-actions/run-iris@v1
         with:
           primary_project_key: SonarSource_sonarqube-quality-gate-action
-          primary_platform: "Next"
+          primary_platform: "SQC-EU"
           shadow1_project_key: SonarSource_sonarqube-quality-gate-action
-          shadow1_platform: "SQC-EU"
+          shadow1_platform: "Next"
           shadow2_project_key: SonarSource_sonarqube-quality-gate-action
           shadow2_platform: "SQC-US"

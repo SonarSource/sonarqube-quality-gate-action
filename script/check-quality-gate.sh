@@ -29,7 +29,7 @@ else
    ceTaskUrl="$(sed -n 's/ceTaskUrl=\(.*\)/\1/p' "${metadataFile}")"
 fi
 
-if [ -z "${serverUrl}" ] || [ -z "${ceTaskUrl}" ]; then
+if [[ -z "${serverUrl}" || -z "${ceTaskUrl}" ]]; then
   echo "Invalid report metadata file."
   exit 1
 fi

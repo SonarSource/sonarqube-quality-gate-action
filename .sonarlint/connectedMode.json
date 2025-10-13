@@ -1,0 +1,4 @@
+{
+    "sonarQubeUri": "https://next.sonarqube.com/sonarqube",
+    "projectKey": "SonarSource_sonarqube-quality-gate-action"
+}
