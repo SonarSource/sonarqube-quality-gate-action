@@ -1,0 +1,46 @@
+name: SonarQube Scan
+on:
+  workflow_call:
+    inputs:
+      platform_name:
+        description: 'Platform name (e.g., Next, SQC-EU, SQC-US)'
+        required: true
+        type: string
+      host_url:
+        description: 'SonarQube Server/Cloud host URL'
+        required: true
+        type: string
+      vault_path:
+        description: 'Vault path to retrieve the Sonar token'
+        required: true
+        type: string
+
+jobs:
+  sonar-scan:
+    name: Run ${{ inputs.platform_name }} Analysis
+    runs-on: github-ubuntu-latest-s
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Vault
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # 3.1.0
+        with:
+          secrets: |
+            ${{ inputs.vault_path }} token | SONAR_TOKEN;
+      - name: Run SonarQube Analysis
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ inputs.host_url }}
+        with:
+          args: >
+            -Dsonar.projectKey=SonarSource_sonarqube-quality-gate-action
+            -Dsonar.organization=sonarsource
+            -Dsonar.sources=script
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.sca.enabled=false

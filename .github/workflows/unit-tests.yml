@@ -1,21 +1,19 @@
-name: QA
+name: Unit Tests
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_call:
+
 jobs:
   run-unit-tests:
+    name: Run Unit Tests
     runs-on: github-ubuntu-latest-s
     steps:
       - name: checkout action
-        uses: actions/checkout@v2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           path: main
           fetch-depth: 0
       - name: checkout bats-core
-        uses: actions/checkout@v2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           path: bats-core
           repository: bats-core/bats-core

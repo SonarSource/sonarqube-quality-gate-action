@@ -1,0 +1,22 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_call:
+
+jobs:
+  run-unit-tests:
+    uses: ./.github/workflows/unit-tests.yml
+  run-sqc-eu-analysis:
+    needs: run-unit-tests
+    uses: ./.github/workflows/sonar-scan.yml
+    with:
+      platform_name: "SQC-EU"
+      host_url: "https://sonarcloud.io"
+      vault_path: "development/kv/data/sonarcloud"
+    permissions:
+      id-token: write
+      contents: read
