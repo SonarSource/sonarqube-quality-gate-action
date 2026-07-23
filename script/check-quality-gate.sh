@@ -59,9 +59,13 @@ if [[ ${status} == "PENDING" || ${status} == "IN_PROGRESS" ]] && [[ ${SECONDS} -
     exit 1
 fi
 
+if [[ ${status} == "CANCELED" ]]; then
+    fail "The SonarQube background task was CANCELED."
+fi
+
 if [[ ${status} == "FAILED" ]]; then
     errorMessage="$(jq -r '.task.errorMessage // "No error message provided."' <<< "${task}")"
-    fail "The SonarQube background task failed.${reset}\n\n${errorMessage}"
+    fail "The SonarQube background task ${status}.${reset}\n\n${errorMessage}"
 fi
 
 analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
