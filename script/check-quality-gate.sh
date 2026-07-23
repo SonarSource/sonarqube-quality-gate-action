@@ -59,6 +59,11 @@ if [[ ${status} == "PENDING" || ${status} == "IN_PROGRESS" ]] && [[ ${SECONDS} -
     exit 1
 fi
 
+if [[ ${status} == "FAILED" ]]; then
+    errorMessage="$(jq -r '.task.errorMessage // "No error message provided."' <<< "${task}")"
+    fail "The SonarQube background task failed.${reset}\n\n${errorMessage}"
+fi
+
 analysisId="$(jq -r '.task.analysisId' <<< "${task}")"
 qualityGateUrl="${serverUrl}/api/qualitygates/project_status?analysisId=${analysisId}"
 qualityGateStatus="$(curl --location --location-trusted --max-redirs 10 --silent --fail --show-error --user "${SONAR_TOKEN}": "${qualityGateUrl}" | jq -r '.projectStatus.status')"
