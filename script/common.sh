@@ -4,12 +4,12 @@
 set -e
 set -o pipefail
 
-gray="\\e[37m"
-blue="\\e[36m"
-red="\\e[31m"
-yellow="\\e[33m"
-green="\\e[32m"
-reset="\\e[0m"
+gray="\\033[37m"
+blue="\\033[36m"
+red="\\033[31m"
+yellow="\\033[33m"
+green="\\033[32m"
+reset="\\033[0m"
 
 info() { echo -e "${blue}INFO: $*${reset}"; }
 error() { echo -e "${red}ERROR: $*${reset}"; }
