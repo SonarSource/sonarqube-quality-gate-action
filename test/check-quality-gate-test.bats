@@ -105,6 +105,43 @@ teardown() {
   [[ "$output" = *"Quality Gate not set for the project. Please configure the Quality Gate in SonarQube or remove sonarqube-quality-gate action from the workflow."* ]]
 }
 
+@test "fail when Sonar background task failed with an error message" {
+  export SONAR_TOKEN="test"
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3jz9LkwR9Gs0pBY" >> metadata_tmp
+
+  #mock curl
+  function curl() {
+     echo '{"task":{"status":"FAILED","errorMessage":"Fact of life: analysis cannot be processed"}}'
+  }
+  export -f curl
+
+  run script/check-quality-gate.sh metadata_tmp 300
+
+  [ "$status" -eq 1 ]
+  [[ "$output" = *"The SonarQube background task FAILED."* ]]
+  [[ "$output" = *"Fact of life: analysis cannot be processed"* ]]
+}
+
+@test "fail when Sonar background task canceled" {
+  export SONAR_TOKEN="test"
+  echo "serverUrl=http://localhost:9000" >> metadata_tmp
+  echo "ceTaskUrl=http://localhost:9000/api/ce/task?id=AXlCe3jz9LkwR9Gs0pBY" >> metadata_tmp
+
+  #mock curl
+  function curl() {
+     echo '{"task":{"status":"CANCELED","errorMessage":"Analysis was canceled"}}'
+  }
+  export -f curl
+
+  run script/check-quality-gate.sh metadata_tmp 300
+
+  [ "$status" -eq 1 ]
+  [[ "$output" = *"The SonarQube background task was CANCELED."* ]]
+  [[ "$output" != *"Analysis was canceled"* ]]
+  [[ "$output" != *"No error message provided."* ]]
+}
+
 @test "fail when polling timeout is reached" {
   export SONAR_TOKEN="test"
   echo "serverUrl=http://localhost:9000" >> metadata_tmp
