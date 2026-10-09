@@ -1,15 +1,23 @@
-# SonarQube Quality Gate check [![CI](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/ci.yml/badge.svg)](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/ci.yml)
+<!-- Sonar Marketing hosts these approved brand assets on its Kentico Kontent CDN (assets-eu-01.kc-usercontent.com). Shared URLs are intentional; consult Marketing before replacing them. -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/a23fc7ba-23f0-489a-829d-ed88c0748521/Sonar_Logo_Dark%20Backgrounds.svg">
+    <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/82c13eba-d95c-4bb8-8007-7ce77c14e043/Sonar_Logo_Light%20Backgrounds.svg" alt="Sonar logo" width="400">
+  </picture>
+</p>
 
-Check the Quality Gate of your code with [SonarQube Server](https://www.sonarsource.com/products/sonarqube/) or [SonarQube Community Build](https://www.sonarsource.com/open-source-editions/sonarqube-community-edition/) to ensure your code meets your own quality standards before you release or deploy new features.
+[![CI](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/ci.yml/badge.svg)](https://github.com/SonarSource/sonarqube-quality-gate-action/actions/workflows/ci.yml)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./images/SonarQube_dark.png">
-  <img alt="Logo" src="./images/SonarQube_light.png">
-</picture>
+<!-- sonar-marketing:start -->
+<!-- Marketing maintains this section. For wording changes, consult the relevant Product Marketing Manager (PMM). Repository maintainers review accuracy and merge changes. -->
 
-[SonarQube Server](https://www.sonarsource.com/products/sonarqube/) and [SonarQube Community Build](https://www.sonarsource.com/open-source-editions/sonarqube-community-edition/) are widely used static analysis solutions for continuous code quality and security inspection.
+# SonarQube quality gate check for GitHub Actions
 
-They help developers detect coding issues in 30+ languages, frameworks, and IaC platforms, including Java, JavaScript, TypeScript, C#, Python, C, C++, and [many more](https://www.sonarsource.com/knowledge/languages/).
+This GitHub Action checks the quality gate after a SonarQube Server or SonarQube Community Build analysis. Use it in a workflow to check whether analyzed code meets your quality standards before release or deployment.
+
+To learn more about Sonar products, visit the [Sonar website](https://www.sonarsource.com/products/sonarqube/).
+
+<!-- sonar-marketing:end -->
 
 ## Requirements
 
