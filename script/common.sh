@@ -12,7 +12,7 @@ green="\\033[32m"
 reset="\\033[0m"
 
 info() { echo -e "${blue}INFO: $*${reset}"; }
-error() { echo -e "${red}ERROR: $*${reset}"; }
+error() { echo -e "${red}ERROR: $*${reset}" >&2; }
 debug() {
     if [[ "${DEBUG}" == "true" ]]; then
         echo -e "${gray}DEBUG: $*${reset}";
